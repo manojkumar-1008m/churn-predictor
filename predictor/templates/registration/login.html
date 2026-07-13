@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Churn Predictor</title>
+    <link rel="stylesheet" href="{% static 'predictor/style.css' %}?v=4">
+</head>
+<body>
+    <main class="login-shell">
+        <section class="login-card">
+            <h1>Welcome Back</h1>
+            <p>Sign in to access the churn prediction dashboard.</p>
+
+            {% if form.errors %}
+                <div class="card error-card">
+                    <p>Invalid username or password. Please try again.</p>
+                </div>
+            {% endif %}
+
+            <form method="post" class="login-form">
+                {% csrf_token %}
+                <div class="field-wrap">
+                    <label for="id_username">Username</label>
+                    <input type="text" name="username" id="id_username" required autofocus>
+                </div>
+                <div class="field-wrap">
+                    <label for="id_password">Password</label>
+                    <input type="password" name="password" id="id_password" required>
+                </div>
+                {% if next %}
+                    <input type="hidden" name="next" value="{{ next }}">
+                {% endif %}
+                <button type="submit">Login</button>
+            </form>
+
+            <p class="auth-link-row">New user? <a href="{% url 'register' %}" class="auth-link">Create an account</a></p>
+        </section>
+    </main>
+</body>
+</html>

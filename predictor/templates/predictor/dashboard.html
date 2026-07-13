@@ -1,0 +1,77 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | ChurnVision</title>
+    <link rel="stylesheet" href="{% static 'predictor/style.css' %}?v=7">
+</head>
+<body>
+    <main class="shell">
+        <section class="header-panel">
+            <h1 class="brand-mark">ChurnVision</h1>
+            <p>Manage customer risk workflows from one place.</p>
+            <nav class="menu-list" aria-label="Pages">
+                <a class="menu-link active" href="{% url 'dashboard' %}">Dashboard</a>
+                <a class="menu-link" href="{% url 'single_scan' %}">Single Scan</a>
+                <a class="menu-link" href="{% url 'database_scan' %}">Database Scan</a>
+                <a class="menu-link" href="{% url 'analysis_history' %}">History</a>
+            </nav>
+            <div class="auth-row">
+                <span class="welcome-back">Welcome back, {{ request.user.username }}</span>
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="ghost-btn">Logout</button>
+                </form>
+            </div>
+        </section>
+
+        <section class="dashboard-grid">
+            <article class="option-card">
+                <h2>Add Database and Scan</h2>
+                <p>Upload your full CSV dataset, train model from CSV, and scan the database to list customers likely to churn.</p>
+                <p class="option-meta">Best for campaign planning and account-level retention sweeps.</p>
+                <a class="link-btn" href="{% url 'database_scan' %}">Open Database Scan</a>
+            </article>
+
+            <article class="option-card">
+                <h2>Scan Single User</h2>
+                <p>Enter one customer profile manually and get immediate churn prediction with confidence.</p>
+                <p class="option-meta">Best for support calls, escalations, and real-time decisioning.</p>
+                <a class="link-btn" href="{% url 'single_scan' %}">Open Single Scan</a>
+            </article>
+
+            <article class="option-card">
+                <h2>View Analysis History</h2>
+                <p>See how many analyses you have run, what data you analyzed, and the saved outcomes.</p>
+                <p class="option-meta">Best for audit trail, follow-up reviews, and recap of past scans.</p>
+                <a class="link-btn" href="{% url 'analysis_history' %}">Open History</a>
+            </article>
+        </section>
+
+        <section class="dashboard-hero">
+            <div class="hero-main">
+                <p class="hero-kicker">Risk Intelligence</p>
+                <h2>Predict churn early, then act with confidence.</h2>
+                <p>Run bulk database scans for campaign targeting, or evaluate one customer instantly for support and retention decisions.</p>
+            </div>
+            <div class="hero-stats">
+                <article class="stat-tile">
+                    <h3>2 Modes</h3>
+                    <p>Single profile and full-database scoring.</p>
+                </article>
+                <article class="stat-tile">
+                    <h3>Live Output</h3>
+                    <p>Instant risk label with confidence signal.</p>
+                </article>
+                <article class="stat-tile">
+                    <h3>CSV Pipeline</h3>
+                    <p>Train and scan directly from uploaded data.</p>
+                </article>
+            </div>
+        </section>
+
+    </main>
+</body>
+</html>

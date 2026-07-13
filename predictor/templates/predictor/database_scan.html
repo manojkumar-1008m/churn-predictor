@@ -1,0 +1,89 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Scan | Churn Predictor</title>
+    <link rel="stylesheet" href="{% static 'predictor/style.css' %}?v=7">
+</head>
+<body>
+    <main class="shell">
+        <section class="header-panel">
+            <h1>Database Upload and Scan</h1>
+            <p>Upload a full database CSV, train, and scan for churn risk.</p>
+            <nav class="menu-list" aria-label="Pages">
+                <a class="menu-link" href="{% url 'dashboard' %}">Dashboard</a>
+                <a class="menu-link" href="{% url 'single_scan' %}">Single Scan</a>
+                <a class="menu-link active" href="{% url 'database_scan' %}">Database Scan</a>
+                <a class="menu-link" href="{% url 'analysis_history' %}">History</a>
+            </nav>
+            <div class="auth-row">
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="ghost-btn">Logout</button>
+                </form>
+            </div>
+        </section>
+
+        <section class="content-grid single-column">
+            <aside class="result-panel">
+                <h2>Database Tools</h2>
+                <form method="post" enctype="multipart/form-data" class="upload-panel">
+                    {% csrf_token %}
+                    {{ dataset_form.dataset_file }}
+                    <button type="submit" name="train_model" value="1">Train From CSV</button>
+                    <button type="submit" name="scan_database" value="1">Scan CSV For Churn</button>
+                </form>
+                {% if train_message %}
+                    <div class="card safe">
+                        <p>{{ train_message }}</p>
+                    </div>
+                {% endif %}
+                {% if scan_result %}
+                    <div class="card neutral">
+                        <h3>Churn Scan Result</h3>
+                        <p>Total rows: {{ scan_result.total_rows }}</p>
+                        <p>Scanned rows: {{ scan_result.scanned_rows }}</p>
+                        <p>Identifier field: {{ scan_result.identifier_column }}</p>
+                        <p><strong>Customers likely to churn: {{ scan_result.churn_count }}</strong></p>
+                        {% if scan_result.churn_details %}
+                            <div class="churn-list">
+                                <ul>
+                                    {% for detail in scan_result.churn_details %}
+                                        <li>
+                                            <strong>Customer {{ detail.customer }}</strong><br>
+                                            Risk: {{ detail.risk }}<br>
+                                            Probability: {{ detail.probability_percent }}%
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% elif scan_result.churn_customers %}
+                            <div class="churn-list">
+                                <ul>
+                                    {% for customer in scan_result.churn_customers %}
+                                        <li>{{ customer }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                        <div class="history-actions">
+                            <a class="menu-link" href="{% url 'database_scan_result_download' %}?format=csv">Download CSV</a>
+                            <a class="menu-link" href="{% url 'database_scan_result_download' %}?format=xlsx">Download Excel</a>
+                            <a class="menu-link" href="{% url 'database_scan_result_download' %}?format=json">Download JSON</a>
+                            <a class="menu-link" href="{% url 'database_scan_result_download' %}?format=txt">Download TXT</a>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if error_message %}
+                    <div class="card error-card">
+                        <h3>Database Scan Error</h3>
+                        <p>{{ error_message }}</p>
+                    </div>
+                {% endif %}
+            </aside>
+        </section>
+    </main>
+</body>
+</html>

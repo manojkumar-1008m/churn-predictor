@@ -1,0 +1,91 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis History | ChurnVision</title>
+    <link rel="stylesheet" href="{% static 'predictor/style.css' %}?v=7">
+</head>
+<body>
+    <main class="shell">
+        <section class="header-panel">
+            <h1 class="brand-mark">Analysis History</h1>
+            <p>Review your previous scans, analyzed data snapshots, and outcomes.</p>
+            <nav class="menu-list" aria-label="Pages">
+                <a class="menu-link" href="{% url 'dashboard' %}">Dashboard</a>
+                <a class="menu-link" href="{% url 'single_scan' %}">Single Scan</a>
+                <a class="menu-link" href="{% url 'database_scan' %}">Database Scan</a>
+                <a class="menu-link active" href="{% url 'analysis_history' %}">History</a>
+            </nav>
+            <div class="auth-row">
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="ghost-btn">Logout</button>
+                </form>
+            </div>
+        </section>
+
+        <section class="result-panel history-panel">
+            <h2>Your Analysis History</h2>
+            <p class="history-count">Total analyses run: {{ history.total_count|default:0 }}</p>
+
+            {% if error_message %}
+                <div class="card error-card">
+                    <h3>History Load Error</h3>
+                    <p>{{ error_message }}</p>
+                </div>
+            {% elif history.items %}
+                <div class="history-list">
+                    {% for item in history.items %}
+                        <article class="history-item">
+                            <p class="history-time">Record #{{ forloop.counter }}</p>
+                            <p class="history-title">{{ item.analysis_type }}</p>
+                            <p class="history-meta">Analyzed: {{ item.analyzed_summary }}</p>
+                            {% if item.analysis_type_raw == 'database_scan' %}
+                                <p class="history-meta">Identifier field: {{ item.identifier_column }}</p>
+                                <p class="history-meta"><strong>Customers likely to churn: {{ item.churn_count }}</strong></p>
+                                {% if item.churn_details %}
+                                    <div class="churn-list">
+                                        <ul>
+                                            {% for detail in item.churn_details %}
+                                                <li>
+                                                    <strong>Customer {{ detail.customer }}</strong><br>
+                                                    Risk: {{ detail.risk }}<br>
+                                                    Probability: {{ detail.probability_percent }}%
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                {% elif item.churn_customers %}
+                                    <div class="churn-list">
+                                        <ul>
+                                            {% for customer in item.churn_customers %}
+                                                <li>{{ customer }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <p class="history-meta">Result: {{ item.result_summary }}</p>
+                            {% endif %}
+                            <p class="history-time">{{ item.timestamp_utc|date:"Y-m-d H:i" }} UTC</p>
+                            <p class="history-meta">Download this scan:</p>
+                            <div class="history-actions">
+                                <a class="menu-link" href="{% url 'analysis_history_entry_download' %}?entry_id={{ item.entry_id }}&format=csv">CSV</a>
+                                <a class="menu-link" href="{% url 'analysis_history_entry_download' %}?entry_id={{ item.entry_id }}&format=xlsx">Excel</a>
+                                <a class="menu-link" href="{% url 'analysis_history_entry_download' %}?entry_id={{ item.entry_id }}&format=json">JSON</a>
+                                <a class="menu-link" href="{% url 'analysis_history_entry_download' %}?entry_id={{ item.entry_id }}&format=txt">TXT</a>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="card neutral">
+                    <p>No analysis history yet. Run Single Scan or Database Scan to start tracking.</p>
+                </div>
+            {% endif %}
+        </section>
+    </main>
+</body>
+</html>

@@ -1,0 +1,56 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChurnVision | AI Churn Intelligence</title>
+    <link rel="stylesheet" href="{% static 'predictor/style.css' %}?v=6">
+</head>
+<body>
+    <main class="shell">
+        <section class="header-panel landing-top">
+            <div class="landing-brand">ChurnVision</div>
+            <div class="landing-nav">
+                {% if request.user.is_authenticated %}
+                    <a class="ghost-link" href="{% url 'dashboard' %}">Dashboard</a>
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="ghost-btn">Logout</button>
+                    </form>
+                {% else %}
+                    <a class="top-auth-btn" href="{% url 'login' %}">Login</a>
+                    <a class="top-auth-btn" href="{% url 'register' %}">Register</a>
+                {% endif %}
+            </div>
+        </section>
+
+        <section class="landing-hero">
+            <p class="hero-kicker">Welcome To ChurnVision</p>
+            <h1>Predict customer churn before revenue walks away.</h1>
+            <p>
+                ChurnVision helps teams detect at-risk customers using AI-powered scoring.
+                Run instant single-user predictions or full CSV scans to get churn candidate lists.
+            </p>
+            <div class="landing-cta">
+                {% if request.user.is_authenticated %}
+                    <a class="link-btn" href="{% url 'dashboard' %}">Go To Dashboard</a>
+                {% else %}
+                    <a class="link-btn" href="{% url 'login' %}">Start With Login</a>
+                {% endif %}
+            </div>
+        </section>
+
+        <section class="dashboard-grid">
+            <article class="option-card">
+                <h2>Single Customer Prediction</h2>
+                <p>Enter one user profile and get immediate churn label plus confidence score.</p>
+            </article>
+            <article class="option-card">
+                <h2>Database-Level Churn Scan</h2>
+                <p>Upload CSV data, train from your data, and find the list of customers likely to churn.</p>
+            </article>
+        </section>
+    </main>
+</body>
+</html>

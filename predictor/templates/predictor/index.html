@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Single User Scan | Churn Predictor</title>
+    <link rel="stylesheet" href="{% static 'predictor/style.css' %}?v=7">
+</head>
+<body>
+    <main class="shell">
+        <section class="header-panel">
+            <h1>Single User Churn Scan</h1>
+            <p>Enter one customer profile to predict churn risk and confidence.</p>
+            <nav class="menu-list" aria-label="Pages">
+                <a class="menu-link" href="{% url 'dashboard' %}">Dashboard</a>
+                <a class="menu-link active" href="{% url 'single_scan' %}">Single Scan</a>
+                <a class="menu-link" href="{% url 'database_scan' %}">Database Scan</a>
+                <a class="menu-link" href="{% url 'analysis_history' %}">History</a>
+            </nav>
+            <div class="auth-row">
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="ghost-btn">Logout</button>
+                </form>
+            </div>
+        </section>
+
+        <section class="content-grid">
+            <form method="post" class="form-panel">
+                {% csrf_token %}
+                <div class="form-grid">
+                    {% for field in form %}
+                        <div class="field-wrap">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.errors %}
+                                <small class="error">{{ field.errors|striptags }}</small>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+                <button type="submit">Predict Churn</button>
+            </form>
+
+            <aside class="result-panel">
+                <h2>Prediction Output</h2>
+                {% if error_message %}
+                    <div class="card error-card">
+                        <h3>Model Error</h3>
+                        <p>{{ error_message }}</p>
+                    </div>
+                {% elif result %}
+                    {% if result.label == 'YES' %}
+                        <div class="card danger">
+                    {% else %}
+                        <div class="card safe">
+                    {% endif %}
+                        <p class="badge">Churn: {{ result.label }}</p>
+                        <p class="score">Confidence: {{ result.confidence }}%</p>
+                        <p>{{ result.action }}</p>
+                    </div>
+                {% else %}
+                    <div class="card neutral">
+                        <p>Run a prediction to see churn status and confidence here.</p>
+                    </div>
+                {% endif %}
+            </aside>
+        </section>
+    </main>
+</body>
+</html>

@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | Churn Predictor</title>
+    <link rel="stylesheet" href="{% static 'predictor/style.css' %}?v=4">
+</head>
+<body>
+    <main class="login-shell">
+        <section class="login-card">
+            <h1>Create Account</h1>
+            <p>Register a new account to use the churn prediction dashboard.</p>
+
+            <form method="post" class="login-form">
+                {% csrf_token %}
+                {% if form.non_field_errors %}
+                    <div class="field-wrap">
+                        {% for error in form.non_field_errors %}
+                            <small class="error">{{ error }}</small>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                {% for field in form %}
+                    <div class="field-wrap">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <small>{{ field.help_text }}</small>
+                        {% endif %}
+                        {% if field.errors %}
+                            <small class="error">{{ field.errors|striptags }}</small>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                <button type="submit">Register</button>
+            </form>
+
+            <p class="auth-link-row">Already have an account? <a href="{% url 'login' %}" class="auth-link">Login</a></p>
+        </section>
+    </main>
+</body>
+</html>
